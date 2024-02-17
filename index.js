@@ -1,5 +1,6 @@
 import express from 'express';
-import mysql from "mysql";
+import con from './dbseed.js';
+
 const app = express();
 
 const PORT = 8080;
@@ -7,12 +8,6 @@ const PORT = 8080;
 app.listen(PORT, () => {
     console.log(`Running on PORT ${PORT}`);
 })
-
-const con = mysql.createConnection({
-    host: "popdb.cpik6822ykjd.us-east-1.rds.amazonaws.com",
-    user: "admin",
-    password: "fryiXohCyL9A07r8QfAg"
-});
 
 app.post('/users', (req, res) => {
     if (req.query.username && req.query.email && req.query.age) {
@@ -22,6 +17,7 @@ app.post('/users', (req, res) => {
             ${req.query.username}', '${req.query.email}', '${req.query.age}')`, 
             function(err, result, fields) {
                 if (err) res.send(err);
+
                 if (result) res.send({username: req.query.username, email: req.query.email, age: req.query.age});
                 if (fields) console.log(fields);
             });
@@ -37,5 +33,7 @@ app.get('/users', (req, res) => {
             if (err) res.send(err);
             if (result) res.send(result);
         });
+        // close the MySQL connection
+        //con.end();
     });
 });
